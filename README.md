@@ -30,3 +30,4 @@ mvn clean compile assembly:single
 ```bash
 java -jar target/IdeaPlatformTestTask-1.0-jar-with-dependencies.jar
 ```
+По итогам запуска вы получите вывод в консоль и текстовый файл с тем же выводом в корневом каталоге.

@@ -6,6 +6,8 @@ import ru.kunikhin.service.processor.TicketProcessor;
 import ru.kunikhin.service.reader.TicketReader;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Map;
 public class AppRunner {
     private final TicketReader ticketReader = new TicketReader();
     private TicketProcessor ticketProcessor = null;
+    private final StringBuilder sb = new StringBuilder();
     private final String origin = "VVO";
     private final String destination = "TLV";
 
@@ -26,14 +29,22 @@ public class AppRunner {
         }
 
         Map<String, Duration> minFlightTimes = ticketProcessor.getMinimalFlightTimeByCarrier(origin, destination);
-        System.out.println("\nМинимальное время полета для каждого перевозчика:");
+        sb.append("Минимальное время полета для каждого перевозчика:\n\n");
         for (Map.Entry<String, Duration> entry : minFlightTimes.entrySet()) {
-            System.out.println(entry.getKey() + ": " + TicketProcessor.formatDuration(entry.getValue()));
+            sb.append(entry.getKey()).append(": ").append(TicketProcessor.formatDuration(entry.getValue())).append("\n");
         }
 
-        System.out.println("\n" + "=".repeat(60) + "\n");
+        sb.append("\n").append("=".repeat(60)).append("\n\n");
 
         double priceDifference = ticketProcessor.getPriceDifferenceBetweenAverageAndMedian(origin, destination);
-        System.out.println("Разница между средней ценой и медианой: " + String.format("%.2f", priceDifference) + " руб.\n");
+        sb.append("Разница между средней ценой и медианой: ").append(String.format("%.2f", priceDifference)).append(" руб.\n");
+
+        try {
+            Files.writeString(Paths.get("output.txt"), sb);
+            System.out.println(sb);
+        } catch (IOException e) {
+            System.err.println("Ошибка записи: " + e.getMessage());
+        }
+
     }
 }
